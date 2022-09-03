@@ -15,5 +15,5 @@ public interface LessonRepository extends JpaRepository<LessonModel, UUID> {
     List<LessonModel> findAllLessonsIntoModule(@Param("moduleId") UUID moduleId);
 
     @Query(value = "select * from tb_lessons where module_module_id = :moduleId and lesson_id = :lessonId", nativeQuery = true)
-    Optional<LessonModel> findLessonIntoModule(@Param("module_id") UUID moduleId, @Param("lessonId") UUID lessonId);
+    Optional<LessonModel> findLessonIntoModule(@Param("moduleId") UUID moduleId, @Param("lessonId") UUID lessonId);
 }
