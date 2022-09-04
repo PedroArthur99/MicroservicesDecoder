@@ -1,4 +1,4 @@
-package com.ead.course.model;
+package com.ead.course.controllers.model;
 
 import com.ead.course.enums.CourseLevel;
 import com.ead.course.enums.CourseStatus;

@@ -1,12 +1,17 @@
 package com.ead.course.controllers;
 
 import com.ead.course.controllers.dtos.LessonDTO;
-import com.ead.course.model.LessonModel;
-import com.ead.course.model.ModuleModel;
+import com.ead.course.controllers.model.LessonModel;
+import com.ead.course.controllers.model.ModuleModel;
 import com.ead.course.services.LessonService;
 import com.ead.course.services.ModuleService;
+import com.ead.course.specifications.SpecificationTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -69,8 +74,12 @@ public class LessonController {
     }
 
     @GetMapping("/modules/{moduleId}/lessons")
-    public ResponseEntity<List<LessonModel>> getAllLessons(@PathVariable(value = "moduleId") UUID moduleId) {
-        return ResponseEntity.status(HttpStatus.OK).body(lessonService.findAllByModule(moduleId));
+    public ResponseEntity<Page<LessonModel>> getAllLessons(SpecificationTemplate.LessonSpec spec,
+                                                           @PageableDefault(page = 0, size = 10, sort = "moduleId", direction = Sort.Direction.ASC) Pageable pageable,
+                                                           @PathVariable(value = "moduleId") UUID moduleId) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(lessonService.findAllByModule(SpecificationTemplate.lessonModuleId(moduleId).and(spec), pageable));
     }
 
     @GetMapping("/modules/{moduleId}/lessons/{lessonId}")
