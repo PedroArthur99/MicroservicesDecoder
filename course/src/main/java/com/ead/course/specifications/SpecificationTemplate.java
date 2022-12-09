@@ -1,8 +1,8 @@
 package com.ead.course.specifications;
 
-import com.ead.course.controllers.model.CourseModel;
-import com.ead.course.controllers.model.LessonModel;
-import com.ead.course.controllers.model.ModuleModel;
+import com.ead.course.model.CourseModel;
+import com.ead.course.model.LessonModel;
+import com.ead.course.model.ModuleModel;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
 import net.kaczmarzyk.spring.data.jpa.domain.Like;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.And;

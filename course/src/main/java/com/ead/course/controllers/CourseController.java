@@ -1,7 +1,7 @@
 package com.ead.course.controllers;
 
 import com.ead.course.controllers.dtos.CourseDTO;
-import com.ead.course.controllers.model.CourseModel;
+import com.ead.course.model.CourseModel;
 import com.ead.course.services.CourseService;
 import com.ead.course.specifications.SpecificationTemplate;
 import org.springframework.beans.BeanUtils;
