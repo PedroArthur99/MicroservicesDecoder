@@ -6,8 +6,7 @@ import com.ead.authuser.enums.UserType;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,12 +17,11 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
+@Log4j2
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthenticationController {
-
-    Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
     private UserService userService;
@@ -31,13 +29,16 @@ public class AuthenticationController {
     @PostMapping("/signup")
     public ResponseEntity<Object> registerUser(@RequestBody
                                                @Validated(UserDTO.UserView.RegistrationPost.class)
-                                               @JsonView(UserDTO.UserView.RegistrationPost.class)
-                                               UserDTO userDTO) {
+                                               @JsonView(UserDTO.UserView.RegistrationPost.class) UserDTO userDTO) {
+
+        log.debug("POST registerUser userDTO received {}", userDTO.toString());
 
         if (userService.existsByUsername(userDTO.getUsername())) {
+            log.warn("Username {} already exists", userDTO.getUsername());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ERROR: This username already exists.");
         }
         if (userService.existsByEmail(userDTO.getEmail())) {
+            log.warn("E-mail {} already exists", userDTO.getEmail());
             return ResponseEntity.status(HttpStatus.CONFLICT).body("ERROR: This e-mail already exists.");
         }
         var userModel = new UserModel();
@@ -47,16 +48,20 @@ public class AuthenticationController {
         userModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
         userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
         this.userService.save(userModel);
+        log.debug("POST registerUser userId saved {}", userModel.getId());
+        log.info("User saved succesfully userId {}", userModel.getId());
+
         return ResponseEntity.status(HttpStatus.CREATED).body(userModel);
     }
 
     @GetMapping("/")
     public String index() {
-        logger.trace("TRACE");
-        logger.debug("DEBUG");
-        logger.info("INFO");
-        logger.warn("WARN");
-        logger.error("ERROR");
+        log.trace("TRACE");
+        log.debug("DEBUG");
+        log.info("INFO");
+        log.warn("WARN");
+        log.error("ERROR");
+
         return "Logging Spring Boot";
     }
 
