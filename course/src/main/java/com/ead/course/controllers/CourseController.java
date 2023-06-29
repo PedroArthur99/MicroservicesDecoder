@@ -4,6 +4,7 @@ import com.ead.course.controllers.dtos.CourseDTO;
 import com.ead.course.model.CourseModel;
 import com.ead.course.services.CourseService;
 import com.ead.course.specifications.SpecificationTemplate;
+import com.ead.course.validation.CourseValidator;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,8 +30,15 @@ public class CourseController {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private CourseValidator courseValidator;
+
     @PostMapping
-    public ResponseEntity<Object> saveCourse(@RequestBody @Valid CourseDTO courseDTO) {
+    public ResponseEntity<Object> saveCourse(@RequestBody CourseDTO courseDTO, Errors errors) {
+        courseValidator.validate(courseDTO, errors);
+        if (errors.hasErrors()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors.getAllErrors());
+        }
         CourseModel courseModel = new CourseModel();
         BeanUtils.copyProperties(courseDTO, courseModel);
         courseModel.setCreationDate(LocalDateTime.now(ZoneId.of("UTC")));
@@ -40,7 +49,7 @@ public class CourseController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteCourse(@PathVariable(value = "id") UUID courseId) {
         Optional<CourseModel> courseModelOptional = courseService.findById(courseId);
-        if (!courseModelOptional.isPresent()) {
+        if (courseModelOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course not found.");
         }
         else {
